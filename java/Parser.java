@@ -20,6 +20,8 @@ public class Parser {
             Expr right = comparison();
             expr = new Expr.Binary(expr, operator, right);
         }
+
+        return expr;
     }
 
     private boolean match(TokenType... types){
@@ -35,6 +37,15 @@ public class Parser {
     private boolean check(TokenType type) {
         if (isAtEnd()) return false;
         return peek().type == type;
+    }
+
+    private Token advance() {
+        if(!isAtEnd()) current++;
+        return previous();
+    }
+
+    private boolean isAtEnd() {
+        return peek().type == TokenType.EOF;
     }
 
     private Token peek() {
@@ -100,6 +111,7 @@ public class Parser {
             consume(TokenType.RIGHT_PAREN, "Expect  ')' after expression.");
             return new Expr.Grouping(expr);
         }
+        throw error(peek(), "Expect expression.");
     }
 
     private Token consume(TokenType type, String message){
@@ -112,11 +124,30 @@ public class Parser {
         return new ParseError();
     }
 
-    static void error(Token token, String message) {
-        if (token.type == TokenType.EOF ) {
-            report(token.line, " at end", message);
-        } else {
-            report(token.line, " at '" + token.lexeme + "'" + message);
+    private void synchronize() {
+        advance();
+        while (!isAtEnd()){
+            if (previous().type == TokenType.SEMICOLON) return;
+            switch (peek().type){
+                case CLASS:
+                case FUN:
+                case VAR:
+                case FOR:
+                case IF:
+                case WHILE:
+                case PRINT:
+                case RETURN:
+                    return;
+            }
+            advance();
+        }
+    }
+
+    Expr parse() {
+        try {
+            return expression();
+        } catch (ParseError error){
+            return null;
         }
     }
 }
