@@ -1,7 +1,7 @@
 public class Interpreter implements Expr.Visitor<Object> {
 
     @Override
-    public Object visitLliteralExpr(Expr.Literal expr) {
+    public Object visitLiteralExpr(Expr.Literal expr) {
         return expr.value;
     }
 
