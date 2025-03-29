@@ -26,6 +26,17 @@ class AstPrinter implements Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
+    @Override
+    public String visitVariableExpr(Expr.Variable expr){
+        return expr.name.literal.toString();
+    }
+
+    @Override
+    public String visitAssignExpr(Expr.Assign expr) {
+        return "var " + expr.name.lexeme + " = " + expr.name.literal;
+    }
+
+
     private String parenthesize(String name, Expr ...exprs) {
         StringBuilder builder = new StringBuilder();
         builder.append("(").append(name);
@@ -49,4 +60,6 @@ class AstPrinter implements Expr.Visitor<String> {
 
         System.out.println(new AstPrinter().print(expression));
     }
+
+
 }
