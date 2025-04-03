@@ -189,6 +189,7 @@ public class Parser {
 
     private Stmt declaration() {
         try {
+            if (match(TokenType.FUN)) return function("function");
             if (match(TokenType.VAR)) return varDeclaration();
             return statement();
         } catch (ParseError error){
@@ -361,5 +362,27 @@ public class Parser {
         Token paren = consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.");
 
         return new Expr.Call(callee, paren, arguments);
+    }
+
+    private Stmt.Function function(String kind) {
+        Token name = consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
+
+        List<Token> parameters = new ArrayList<>();
+        if (!check(TokenType.RIGHT_PAREN)){
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+
+                parameters.add(
+                        consume(TokenType.IDENTIFIER, "Expect parameter name.")
+                );
+            } while (match(TokenType.COMMA));
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after parameteres");
+        }
+        consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body." );
+
+        List<Stmt> body = block();
+        return new Stmt.Function(name, parameters, body);
     }
 }
