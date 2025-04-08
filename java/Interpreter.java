@@ -140,7 +140,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         stmt.accept(this);
     }
 
-    private Void executeBlock(List<Stmt> statements, Environment environment){
+    public Void executeBlock(List<Stmt> statements, Environment environment){
         Environment previous = this.environment;
         try {
             this.environment = environment;
@@ -255,6 +255,21 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             throw new RuntimeError(expr.paren, "Expected " + function.arity() + "arguments but got " + arguments.size() + ".");
         }
         return function.call(this, arguments);
+    }
+
+    @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        LoxFunction function = new LoxFunction(stmt);
+        environment.define(stmt.name.lexeme, function);
+        return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        Object value = null;
+        if (stmt.value != null) value = evaluate(stmt.value);
+
+        throw new Return(value);
     }
 }
 
