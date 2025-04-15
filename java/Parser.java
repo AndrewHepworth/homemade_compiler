@@ -401,7 +401,7 @@ public class Parser {
 
     private Stmt classDeclaration() {
         Token name = consume(TokenType.IDENTIFIER, "Expect class name.");
-        consume(TokenType.LEFT_BRACE, "Expect '}' before class body.");
+        consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
         List<Stmt.Function> methods = new ArrayList<>();
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
