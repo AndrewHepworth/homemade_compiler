@@ -369,6 +369,7 @@ public class Parser {
     private Stmt.Function function(String kind) {
         Token name = consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
 
+        consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
         List<Token> parameters = new ArrayList<>();
         if (!check(TokenType.RIGHT_PAREN)){
             do {
@@ -380,8 +381,9 @@ public class Parser {
                         consume(TokenType.IDENTIFIER, "Expect parameter name.")
                 );
             } while (match(TokenType.COMMA));
-            consume(TokenType.RIGHT_PAREN, "Expect ')' after parameteres");
         }
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameteres");
+
         consume(TokenType.LEFT_BRACE, "Expect '{' before " + kind + " body." );
 
         List<Stmt> body = block();
