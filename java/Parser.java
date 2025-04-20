@@ -108,6 +108,8 @@ public class Parser {
             return new Expr.Literal(previous().literal);
         }
 
+        if(match(TokenType.THIS)) return new Expr.This(previous());
+
         if (match(TokenType.IDENTIFIER)){
             return new Expr.Variable(previous());
         }
@@ -347,6 +349,7 @@ public class Parser {
                 expr = finishCall(expr);
             } else if (match(TokenType.DOT)) {
                 Token name = consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
